@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "name": "e_a_t_ai-auto-slice-edit",
+  "dirname": "AI自动化切片剪辑拉片",
+  "version": "0.1.0",
+  "origin": "https://github.com/0x00pluto/evo_agent_team_ai-auto-slice-edit.git",
+  "dependencies": {}
+}
