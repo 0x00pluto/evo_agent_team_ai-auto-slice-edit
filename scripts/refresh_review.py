@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from lapi.director.review import render_review_script
+from lapi.theme_dir import resolve_temp_dir
 from lapi.timeline import load_timeline
 
 
@@ -22,7 +23,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--theme", required=True)
     args = p.parse_args(argv)
 
-    work = ROOT / "temp" / args.theme
+    try:
+        work = resolve_temp_dir(ROOT / "temp", args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
     tl_path = work / "timeline.json"
     tr_path = work / "transcript.json"
     if not tl_path.exists():

@@ -13,10 +13,12 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+from lapi.theme_dir import resolve_temp_dir
+
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="导出时间窗内词级时间码（无 LLM）")
-    p.add_argument("--theme", required=True, help="temp/<theme>/transcript.json")
+    p.add_argument("--theme", required=True, help="temp 工作区短名或带戳全名")
     p.add_argument("--start", type=float, required=True)
     p.add_argument("--end", type=float, required=True)
     p.add_argument(
@@ -33,7 +35,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = p.parse_args(argv)
 
-    path = ROOT / "temp" / args.theme / "transcript.json"
+    try:
+        work = resolve_temp_dir(ROOT / "temp", args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+    path = work / "transcript.json"
     if not path.exists():
         print(f"找不到: {path}", file=sys.stderr)
         return 1
@@ -44,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
     hi = args.end + args.pad_after
 
     print(
-        f"# theme={args.theme} window=[{lo:.3f},{hi:.3f}] "
+        f"# theme={work.name} window=[{lo:.3f},{hi:.3f}] "
         f"core=[{args.start:.3f},{args.end:.3f}]"
     )
     print("# index\tstart\tend\ttext")

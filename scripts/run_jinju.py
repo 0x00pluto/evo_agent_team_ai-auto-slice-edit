@@ -23,11 +23,12 @@ from lapi.jinju.schema import (
     load_candidates,
 )
 from lapi.jinju.sources import axis_label_cn, resolve_source_axes
+from lapi.theme_dir import resolve_temp_dir
 
 
 def _theme_dirs(theme: str) -> tuple[Path, Path]:
-    return ROOT / "output" / theme, ROOT / "temp" / theme
-
+    """output 短名；temp 解析戳目录（或精确名）。"""
+    return ROOT / "output" / theme, resolve_temp_dir(ROOT / "temp", theme)
 
 def _load_sources(temp_dir: Path) -> dict:
     path = temp_dir / "sources.json"
@@ -38,7 +39,11 @@ def _load_sources(temp_dir: Path) -> dict:
 
 def cmd_nominate(args: argparse.Namespace) -> int:
     """写入/覆盖 candidates 草稿（可由 Agent 预填，人再改）。"""
-    _out_dir, temp_dir = _theme_dirs(args.theme)
+    try:
+        _out_dir, temp_dir = _theme_dirs(args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
     work = jinju_work_dir(temp_dir)
     work.mkdir(parents=True, exist_ok=True)
     path = candidates_path(temp_dir)
@@ -78,7 +83,11 @@ def cmd_nominate(args: argparse.Namespace) -> int:
 
 
 def cmd_export(args: argparse.Namespace) -> int:
-    out_dir, temp_dir = _theme_dirs(args.theme)
+    try:
+        out_dir, temp_dir = _theme_dirs(args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
     path = candidates_path(temp_dir)
     if not path.is_file():
         print(f"缺 {path}；先 nominate 或手写 candidates.json", file=sys.stderr)
@@ -121,8 +130,12 @@ def cmd_export(args: argparse.Namespace) -> int:
 
 
 def cmd_pack(args: argparse.Namespace) -> int:
-    out_dir, temp_dir = _theme_dirs(args.theme)
-    print(f"pack jinju theme={args.theme}（焊尾进三片 + jinju 备选）")
+    try:
+        out_dir, temp_dir = _theme_dirs(args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+    print(f"pack jinju theme={args.theme} temp={temp_dir.name}（焊尾进三片 + jinju 备选）")
     packed = pack_jinju(temp_dir, out_dir)
     print(f"  → {packed}")
     for p in sorted(packed.iterdir()):

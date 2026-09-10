@@ -18,9 +18,11 @@ uv pip install -r requirements.txt   # 首次
 
 | 目录 | 用途 | 上传？ |
 |---|---|---|
-| `temp/<theme>/` | 工作区：转写、sources、timeline、审阅、横竖屏字幕草稿、ffmpeg cuts | **否** |
-| `output/<theme>/` | **干净交付包**：三片（末尾含推荐金句）+ 审阅 + 横竖屏字幕 + `jinju/` 备选 | **是（只传这一层）** |
+| `temp/<theme>_<YYYY_MM_DD_HH_MM>/` | 成片工作区（plan 新建时自动打东八区戳；cut 可用短名 resolve 到最新戳） | **否** |
+| `output/<theme>/` | **干净交付包**：三片（末尾含推荐金句）+ 审阅 + 横竖屏字幕 + `jinju/` 备选；**不打戳** | **是（只传这一层）** |
 | `cache/transcripts/` | STT MD5 缓存 | 否 |
+
+实现：[`src/lapi/theme_dir.py`](../../src/lapi/theme_dir.py)（`allocate_temp_dir` / `resolve_temp_dir`）。
 
 ## 参数
 
@@ -28,13 +30,13 @@ uv pip install -r requirements.txt   # 首次
 |---|---|
 | `plan --wide` | 全景视频路径 |
 | `plan --closeup` | 特写视频路径（STT / 音源默认这一路） |
-| `plan --theme` | 主题名 → 工作写入 `temp/<theme>/` |
+| `plan --theme` | 主题**短名** → 新建 `temp/<短名>_YYYY_MM_DD_HH_MM/`；`output/` 仍用短名 |
 | `plan --target-seconds` | 高光总时长，默认 120 |
 | `plan --force-stt` | 忽略 MD5 缓存强制重转写 |
 | `plan --yes-cut` | 无人值守跳过闸门（日常勿用；会跳过语义快剪） |
-| `cut --theme` | 与 plan 相同主题；读 temp，写出片、映射 SRT 并组装 `output/<theme>/` |
-| `cut --timeline` | 默认 `temp/<theme>/timeline.json` |
-| `cut --wide/--closeup` | 可覆盖 `temp/<theme>/sources.json` |
+| `cut --theme` | 短名或带戳全名；resolve 到 temp 后出片，组装 `output/<短名>/` |
+| `cut --timeline` | 默认 `temp/<resolved>/timeline.json` |
+| `cut --wide/--closeup` | 可覆盖 `temp/<resolved>/sources.json` |
 | `pack --theme` | 不重裁；缺横竖屏字幕时从 transcript+timeline 生成草稿后组装 |
 
 导演提示词（热调）：[`src/lapi/director/prompts/`](../../src/lapi/director/prompts/)
@@ -110,6 +112,7 @@ uv pip install -r requirements.txt   # 首次
 2. 从 `transcript.json` + `timeline.json` **映射** `temp/<theme>/highlight_竖屏.srt` + `highlight_横屏.srt`（成片轴从 0 起；断句符→空格；竖≤14 / 横≤20 字）
 3. （推荐）读 [`highlight_srt_polish.md`](../../src/lapi/director/prompts/highlight_srt_polish.md) 只改正文别字，**不动时间码**（横竖屏各改各的，或先改竖屏再确认横屏）
 4. `pack` 写入 `output/<theme>/`（上传只传这一目录；**不含** `timeline.json`）
+5. 交付初检通过后 → [`cleanup-temp-media.md`](./cleanup-temp-media.md)（先 dry-run 再 `--apply`；勿跳过）
 
 ```bash
 .venv/bin/python scripts/run_dualcam_lapi.py plan \

@@ -47,6 +47,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 1. 登记 `sources`：用户给几路写几路（`closeup` / `wide` / 其他轴名）。
 2. 跑 [`dualcam-auto-highlight.md`](./dualcam-auto-highlight.md)：`plan` → 语义快剪 → 镜头导演 → 人确认 → `cut`（叙事底片 + 横竖屏字幕草稿）。
 3. 跑 [`jinju-select.md`](./jinju-select.md)：nominate → 人确认推荐 → `export` → `pack`（焊尾 + `jinju/` 备选 + 字幕末 cue）。
+4. 交付初检通过后 → [`cleanup-temp-media.md`](./cleanup-temp-media.md)（dry-run → `--apply`）。
 
 ### 路径 B：主片已定，只补金句
 
@@ -54,6 +55,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 
 1. 确认 `temp/<theme>/` 有 `transcript.json`、`sources.json`，且叙事成片在 `output/` 或可快照到 `narrative/`。
 2. 只跑 [`jinju-select.md`](./jinju-select.md)。
+3. 交付初检通过后 → [`cleanup-temp-media.md`](./cleanup-temp-media.md)。
 
 ## 产物
 

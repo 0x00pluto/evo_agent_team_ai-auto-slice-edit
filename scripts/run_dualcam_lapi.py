@@ -19,15 +19,23 @@ from lapi.director import direct_auto_result, render_review_script
 from lapi.highlight_srt import ensure_highlight_srt
 from lapi.jinju.pack import snapshot_narrative_bases
 from lapi.stt import transcribe_video, words_to_srt
+from lapi.theme_dir import allocate_temp_dir, resolve_temp_dir
 from lapi.timeline import load_timeline
 
 
-def _theme_dirs(theme: str) -> tuple[Path, Path]:
-    """返回 (output_dir 干净交付包, temp_dir 工作区)。"""
-    out_dir = ROOT / "output" / theme
-    temp_dir = ROOT / "temp" / theme
-    return out_dir, temp_dir
+def _output_dir(theme: str) -> Path:
+    """交付包目录：不打戳。"""
+    return ROOT / "output" / theme
 
+
+def _temp_for_plan(theme: str) -> Path:
+    """新建成片工作区：带东八区时间戳。"""
+    return allocate_temp_dir(ROOT / "temp", theme)
+
+
+def _temp_resolve(theme: str) -> Path:
+    """解析已有 temp 工作区（精确或短名→最新戳）。"""
+    return resolve_temp_dir(ROOT / "temp", theme)
 
 def cmd_plan(args: argparse.Namespace) -> int:
     wide = Path(args.wide)
@@ -39,8 +47,9 @@ def cmd_plan(args: argparse.Namespace) -> int:
         print(f"全景不存在: {wide}", file=sys.stderr)
         return 1
 
-    _out_dir, temp_dir = _theme_dirs(args.theme)
-    temp_dir.mkdir(parents=True, exist_ok=True)
+    _out_dir = _output_dir(args.theme)
+    temp_dir = _temp_for_plan(args.theme)
+    print(f"temp 工作区 → {temp_dir}")
     cache_dir = ROOT / "cache" / "transcripts"
 
     print("=" * 50)
@@ -123,7 +132,13 @@ def cmd_plan(args: argparse.Namespace) -> int:
 
 
 def cmd_cut(args: argparse.Namespace) -> int:
-    out_dir, temp_dir = _theme_dirs(args.theme)
+    out_dir = _output_dir(args.theme)
+    try:
+        temp_dir = _temp_resolve(args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+    print(f"temp 工作区 → {temp_dir}")
     timeline_path = (
         Path(args.timeline) if args.timeline else temp_dir / "timeline.json"
     )
@@ -205,9 +220,14 @@ def cmd_cut(args: argparse.Namespace) -> int:
 
 
 def cmd_pack(args: argparse.Namespace) -> int:
-    out_dir, temp_dir = _theme_dirs(args.theme)
+    out_dir = _output_dir(args.theme)
+    try:
+        temp_dir = _temp_resolve(args.theme)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
     print("=" * 50)
-    print(f"pack: 组装交付包 theme={args.theme}")
+    print(f"pack: 组装交付包 theme={args.theme} temp={temp_dir.name}")
     print("=" * 50)
     try:
         srt_path = ensure_highlight_srt(temp_dir, force=False)
@@ -231,7 +251,11 @@ def build_parser() -> argparse.ArgumentParser:
     plan = sub.add_parser("plan", help="转写+导演，写出审阅稿后停止（默认不合成）")
     plan.add_argument("--wide", required=True, help="全景视频路径")
     plan.add_argument("--closeup", required=True, help="特写视频路径（用于 STT）")
-    plan.add_argument("--theme", required=True, help="主题目录名，如 李桢峰会")
+    plan.add_argument(
+        "--theme",
+        required=True,
+        help="主题短名；plan 会建 temp/<短名>_YYYY_MM_DD_HH_MM/，output 仍用短名",
+    )
     plan.add_argument("--target-seconds", type=float, default=120.0)
     plan.add_argument("--force-stt", action="store_true", help="忽略缓存强制重转写")
     plan.add_argument(
