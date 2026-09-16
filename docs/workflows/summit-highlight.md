@@ -10,15 +10,16 @@
 
 实现入口名暂为 `dualcam`（历史文件名），**手法不绑死双机**。
 
+在仓根执行：
+
 ```bash
-cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 .venv/bin/python scripts/run_dualcam_lapi.py --help
 .venv/bin/python scripts/run_jinju.py --help
 ```
 
 ## 机位（随片源）
 
-**机位数 = 用户本场提供的有效片源路数**（常见 1 / 2 / 3；更多按 `sources` 登记）。选型时不问双机还是三机；按用户文件与角色写入 `temp/<theme>/sources.json`（或 `sources.axes`）。
+**机位数 = 用户本场提供的有效片源路数**（常见 1 / 2 / 3；更多按 `sources` 登记）。选型时不问双机还是三机；按用户文件与角色写入成片工作区 `sources.json`（或 `sources.axes`）。
 
 | 路数 | 交付约定 |
 |---|---|
@@ -35,7 +36,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 | 参数 | 说明 |
 |---|---|
 | 片源路径 | 用户提供的 1～N 路同步长片 |
-| `--theme` | 主题名 → `temp/<theme>/`、`output/<theme>/` |
+| `--theme` | 主题**短名** → plan 新建 `temp/<短名>_YYYY_MM_DD_HH_MM/`；cut/jinju 可用短名 resolve；`output/<短名>/` **不打戳** |
 | `--target-seconds` | 叙事目标时长，峰会宣传常见 65 左右（容差随场次） |
 
 导演提示词仍在子步骤模块内热调，本篇不重复。
@@ -51,9 +52,9 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 
 ### 路径 B：主片已定，只补金句
 
-主 `timeline` 不动（周映红 / 彭晶路径）：
+主 `timeline` 不动（叙事已定、只焊金句收尾）：
 
-1. 确认 `temp/<theme>/` 有 `transcript.json`、`sources.json`，且叙事成片在 `output/` 或可快照到 `narrative/`。
+1. 确认成片工作区（短名 resolve 到最新戳）有 `transcript.json`、`sources.json`，且叙事成片在 `output/` 或可快照到 `narrative/`。
 2. 只跑 [`jinju-select.md`](./jinju-select.md)。
 3. 交付初检通过后 → [`cleanup-temp-media.md`](./cleanup-temp-media.md)。
 

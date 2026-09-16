@@ -2,14 +2,13 @@
 
 > 本篇是峰会手法 [`summit-highlight`](./summit-highlight.md) 的**叙事子步骤**；机位随 `sources`；开剪总入口见 [`choose-edit-style`](./choose-edit-style.md)。CLI 文件名 `dualcam` 为历史名，不表示手法必须双机。
 
-按脚本把 1～N 路同步长片收成**语句通顺的高光初剪**，打包交后期精剪。主链：规则粗筛 → Agent 语义快剪 → **镜头导演（特写/全景等已有轴）** → 人确认 → 交付（含与成片轴严格对齐的 `highlight_竖屏.srt` / `highlight_横屏.srt`）。不做剪映精剪、调色与成片发布。
-
-> 复盘口径：主链含交付目录分层与 A/B 镜头导演；**跳过程序化与鲁棒**。推拉摇/成片运镜不在本仓本轮。高光轴字幕由 transcript 映射生成，可选 Agent 纠错别字。
+按脚本把 1～N 路同步长片收成**语句通顺的高光初剪**，打包交后期精剪。主链：规则粗筛 → Agent 语义快剪 → **镜头导演（特写/全景等已有轴）** → 人确认 → 交付（含与成片轴严格对齐的 `highlight_竖屏.srt` / `highlight_横屏.srt`）。不做剪映精剪、调色与成片发布。推拉摇/成片运镜不在本仓；高光轴字幕由 transcript 映射生成，可选 Agent 纠错别字。
 
 ## 入口
 
+在仓根执行：
+
 ```bash
-cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 uv pip install -r requirements.txt   # 首次
 .venv/bin/python scripts/run_dualcam_lapi.py --help
 ```
@@ -63,13 +62,15 @@ uv pip install -r requirements.txt   # 首次
 | 高光字幕：transcript 按 timeline 映射成片轴（竖≤14 / 横≤20） | **留**；与成片时间严格对齐（`t' = t - seg.start + cursor`） |
 | Agent 字幕别字纠错 | **留**（对话闸门）；不重跑 ASR；不改 cue 时间 |
 | 对成片重新 STT | **不做**（易错位） |
-| 推拉摇 / 缩放 / 第三机 | **不做**（成片精剪阶段） |
+| 推拉摇 / 画面缩放模拟 | **不做**（成片精剪阶段） |
+| 单机 / 三机及以上走本 CLI `plan` | **缺口**：`plan`/`cut` 仍偏 `--wide`/`--closeup`；勿假装能吃任意路数。交付约定见 [`summit-highlight.md`](./summit-highlight.md)；程序化补齐留后轮 |
 | 代码内调外部 LLM API | 禁止；判断在 Agent 对话里做 |
 
 ### 1. 原料
 
-- 1～3 路**同时长**同步片（当前实践：全景 + 特写）。
+- 用户本场提供的 1～N 路**同时长**同步片（当前 CLI 实践：全景 + 特写；单机 / 三机见上表缺口）。
 - 主题 / 脚本意图、目标时长（如 120s）。
+- **非峰会访谈禁止**套本步 `plan` 与导演词里的 FDE/OPC `theme_keywords`。
 
 ### 2. plan（规则粗筛）
 
@@ -118,15 +119,15 @@ uv pip install -r requirements.txt   # 首次
 .venv/bin/python scripts/run_dualcam_lapi.py plan \
   --wide "/path/全景.mp4" \
   --closeup "/path/特写.mp4" \
-  --theme 李桢峰会 \
+  --theme 某峰会主题 \
   --target-seconds 120
 
 # … Agent 语义快剪 → 镜头导演，改 temp/<theme>/timeline.json …
-.venv/bin/python scripts/refresh_review.py --theme 李桢峰会
+.venv/bin/python scripts/refresh_review.py --theme 某峰会主题
 
-.venv/bin/python scripts/run_dualcam_lapi.py cut --theme 李桢峰会
+.venv/bin/python scripts/run_dualcam_lapi.py cut --theme 某峰会主题
 # … 可选：Agent 纠错 temp/<theme>/highlight_竖屏.srt / highlight_横屏.srt …
-.venv/bin/python scripts/run_dualcam_lapi.py pack --theme 李桢峰会
+.venv/bin/python scripts/run_dualcam_lapi.py pack --theme 某峰会主题
 ```
 
 ### 流程级验收
@@ -162,7 +163,8 @@ uv pip install -r requirements.txt   # 首次
 
 ## 明确不做（成片阶段）
 
-推拉摇、画面缩放模拟、第三机叠加——不在本仓本轮；精剪工具里再做。  
+推拉摇、画面缩放模拟——不在本仓本轮；精剪工具里再做。  
+三机及以上的**交付约定**见 [`summit-highlight.md`](./summit-highlight.md)；当前 CLI 仍双机缺口，不要假装 `plan` 能吃任意路数。  
 不对高光成片重新 STT（易与裁切轴错位）；别字只在映射稿上 Agent 纠错。
 
 ## 失败排查

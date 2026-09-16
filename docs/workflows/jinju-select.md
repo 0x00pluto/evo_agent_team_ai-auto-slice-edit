@@ -6,12 +6,13 @@
 
 ## 入口
 
+在仓根执行：
+
 ```bash
-cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 .venv/bin/python scripts/run_jinju.py --help
 ```
 
-前置：同主题已有 `temp/<theme>/transcript.json` + `sources.json`，且主链已 `cut` 出叙事三片（会快照到 `temp/<theme>/narrative/`）。
+前置：同主题成片工作区（`--theme` 短名 → resolve 最新戳；或写带戳全名）已有 `transcript.json` + `sources.json`，且主链已 `cut` 出**叙事成片**（轴数随 `sources`；双机实践为特写/全景/混剪三片，会快照到 `narrative/`）。
 
 导演提示词（热调，只动本模块）：
 
@@ -27,11 +28,11 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 | `nominate --from-json` | 从外部 JSON 导入并校验 |
 | `export --theme` | 按 sources 轴数裁切同时间码金句条 + `review.md` |
 | `export --closeup` / `--wide` | 覆盖对应轴路径 |
-| `pack --theme` | `jinju/` 备选 + **焊尾进三条成片** + 更新横竖屏字幕末 cue |
+| `pack --theme` | `jinju/` 备选 + **焊尾进叙事成片**（轴数随 sources；双机实践为三条）+ 更新横竖屏字幕末 cue |
 
-机位解析：读 `sources.json` 的 `closeup` / `wide`，或嵌套 `axes: {…}`。双轴→特写+全景；三轴→三路。
+机位解析：读 `sources.json` 的 `closeup` / `wide`，或嵌套 `axes: {…}`。有几轴出几轴。
 
-焊尾规则：
+焊尾规则（双机实践）：
 
 - 特写高光 = 叙事特写 + 推荐**特写**条
 - 全景高光 = 叙事全景 + 推荐**全景**条
@@ -44,7 +45,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 3. 写入 `candidates.json`（`recommended` = 推荐下标）。
 4. 人确认推荐压轴。
 5. `export` → `pack`。
-6. 听三条成片末尾；要换结尾：改 `recommended` 或告诉剪辑用 `jinju/` 对应轴条替换最后一截，再 `pack`。
+6. 听各轴成片末尾（双机实践为三条）；要换结尾：改 `recommended` 或告诉剪辑用 `jinju/` 对应轴条替换最后一截，再 `pack`。
 
 ## 产物
 
@@ -61,7 +62,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 
 | 路径 | 用途 |
 |---|---|
-| `output/<theme>/<theme>_特写/全景/混剪_高光.mp4` | **最终三条成片（末尾已含推荐金句）** |
+| `output/<theme>/<theme>_特写/全景/混剪_高光.mp4` | **最终成片（末尾已含推荐金句；双机实践为三条）** |
 | `output/<theme>/review_script.md` / `highlight_竖屏.srt` / `highlight_横屏.srt` | 审阅 + 成片轴字幕（含末尾金句 cue） |
 | `output/<theme>/jinju/0N_*_特写/全景.mp4` | 备选金句条（换结尾换最后一截） |
 | `output/<theme>/jinju/review.md` | 金句听选表 |

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """访谈粗剪 timeline 交稿验收（无 LLM）。
 
-检查：合计时长 vs target_seconds、禁止单段跨 T0、P1 仅 wide、
+检查：合计时长 vs target_seconds、禁止单段跨 T0、`t < T0` 仅当时机位、
 段起/止词半截启发式。供父 agent / subagent 交稿前跑；退出码非 0 = 未过门。
 """
 
@@ -207,7 +207,7 @@ def check_timeline(
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
-        description="访谈 timeline 交稿验收：时长 / T0 / P1 wide / 半截启发式"
+        description="访谈 timeline 交稿验收：时长 / 禁跨 T0 / t<T0 仅当时机位 / 半截启发式"
     )
     p.add_argument("--theme", required=True, help="temp 工作区短名或带戳全名")
     p.add_argument(

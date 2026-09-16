@@ -6,8 +6,9 @@
 
 ## 入口
 
+在仓根执行：
+
 ```bash
-cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 .venv/bin/python scripts/cleanup_temp_media.py --help
 ```
 
@@ -19,7 +20,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 |---|---|
 | （默认） | dry-run：只打印可删目标与合计体积，不删 |
 | `--apply` | 真正删除 |
-| `--theme <名>` | 只扫 `temp/<theme>/`；**须精确目录名**（成片区含时间戳时写全名，如 `刘探书访谈CS04_2026_09_10_17_50`）；不做短名解析；省略则扫全部 `temp/*` |
+| `--theme <名>` | 只扫 `temp/<theme>/`；**须精确目录名**（成片区含时间戳时写全名，如 `{短名}_{YYYY_MM_DD_HH_MM}`）；不做短名解析；省略则扫全部 `temp/*` |
 | `--orphan-parts` / `--no-orphan-parts` | 默认开：父主题已有合并 `transcript.json` 时，删 `temp/<theme>_partN/` |
 
 ## 规则
@@ -31,7 +32,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 - `transcript.json` / `transcript.srt`
 - `timeline.json` / `review_script.md` / `highlight_*.srt`
 - `*_concat.txt` / `concat_list.txt`
-- `cut_*.py` / `cut_narrative.py` 等 temp 内脚本
+- `cut_*.py` 等 temp 内一次性脚本
 - `jinju/axes.txt`、`candidates.json`、`review.md`、`jinju/transcript.*`
 - **禁止**删 `output/`、任意转写 / sources / timeline
 
@@ -53,7 +54,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 ```bash
 .venv/bin/python scripts/cleanup_temp_media.py
 # 或只清本场（精确目录名）：
-.venv/bin/python scripts/cleanup_temp_media.py --theme 刘探书访谈CS04_2026_09_10_17_50
+.venv/bin/python scripts/cleanup_temp_media.py --theme '{短名}_{YYYY_MM_DD_HH_MM}'
 ```
 3. 核对列表无「永不删」项后 `--apply`：
 
@@ -65,7 +66,7 @@ cd /Users/peng.zhi/Documents/Codex/AI自动化切片剪辑拉片
 
 4. 抽查：`sources.md` / `transcript.json` / `timeline.json` / `*_concat.txt` 仍在；`aligned/*.mp4`、`cuts/`、`narrative/`、`jinju/*.mp4` 已无。
 
-同素材多方向（如 OPC aligned 被多条 CS 共用）：本场交付后可清该成片工作区 `cuts`/`narrative`；父主题枢纽 `aligned/*.mp4` 在不再续剪时一并精确 `--theme` 或全仓 apply（保留 `*_concat.txt`，需要时 stream copy 重拼）。
+同素材多方向（枢纽 aligned 被多条成片共用）：本场交付后可清该成片工作区 `cuts`/`narrative`；父主题枢纽 `aligned/*.mp4` 在不再续剪时一并精确 `--theme` 或全仓 apply（保留 `*_concat.txt`，需要时 stream copy 重拼）。
 
 ## 产物
 

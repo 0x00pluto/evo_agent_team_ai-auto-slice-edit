@@ -16,10 +16,9 @@
 2. 用户选定后：
    - **峰会高光** → 读 [`summit-highlight.md`](./summit-highlight.md)，按用户给的文件登记机位后开剪。
    - **新建剪辑手法** → 复制 [`_TEMPLATE.md`](./_TEMPLATE.md) 为 `docs/workflows/<slug>.md` → 写清适用场景 / 步骤 / 产物 → 登记 [`docs/doc_index.md`](../doc_index.md) → **回填本篇手法表**。
-   - **不用模板** → 可直接探索；**禁止**新建 `docs/workflows/`；未验证前不升格。若是**访谈 / 分段异源**人物叙事粗剪，开剪前先读 [`docs/faqs/访谈粗剪-分段异源与叙事选句.md`](../faqs/访谈粗剪-分段异源与叙事选句.md)（效果检查清单；勿默认套峰会 `plan`）。
-3. 若用户点了「访谈 A / 访谈 B」等未实装项：明确告知未实装，引导改选「新建剪辑手法」或「不用模板」；选「不用模板」时同样先读上条 FAQ。
-4. **同素材 /「以前剪过」**：选型后、STT 前，扫 `temp/*/sources.md` 与 `sources.json`；能唯一对应则复用转写与片源说明；对不上则问用户一句确认。STT **优先对原始分段**并写 `stt` 溯源；若历史是合并片转写，靠 `stt.concat.md5` 找回 `cache/transcripts/`，**禁止盲目重跑 API**。
-5. **新建成片 temp**：目录名 = `{短名}_{YYYY_MM_DD_HH_MM}`（东八区），走 `lapi.theme_dir.allocate_temp_dir`；素材枢纽（sources+合并转写）不打戳。`output/` 交付名不打戳。详见访谈 FAQ「temp 目录命名」。
+   - **不用模板** → 可直接探索；**禁止**新建 `docs/workflows/`；未验证前不升格。若是**访谈 / 分段异源**人物叙事粗剪，开剪前先读 [`docs/faqs/访谈粗剪-分段异源与叙事选句.md`](../faqs/访谈粗剪-分段异源与叙事选句.md)（跨场规则；**勿**默认套峰会 `plan` / 峰会 `theme_keywords`）。
+3. **同素材 /「以前剪过」**：选型后、STT 前，扫 `temp/*/sources.md` 与 `sources.json`（`person` / `parts` 等字段）；能唯一对应则复用转写与片源说明；对不上则问用户一句确认。STT **优先对原始分段**并写 `stt` 溯源；若历史是合并片转写，靠 `stt.concat.md5` 找回 `cache/transcripts/`，**禁止盲目重跑 API**。
+4. **新建成片 temp**：目录名 = `{短名}_{YYYY_MM_DD_HH_MM}`（东八区），走 `lapi.theme_dir.allocate_temp_dir`；素材枢纽（sources+合并转写）不打戳。`output/` 交付名不打戳。详见访谈 FAQ「temp 目录命名」。
 
 ### 选型（对用户一次问清）
 
@@ -36,8 +35,8 @@
 | slug | 状态 | 说明 |
 |---|---|---|
 | `summit-highlight` | **可用** | 峰会 / FDE / OPC 对外宣传初剪；机位随片源 |
-| 访谈 A | **未实装** | 仅占名；选中则引导新建或不用模板 |
-| 访谈 B | **未实装** | 仅占名；选中则引导新建或不用模板 |
+
+访谈等人物叙事手法**尚未升格**为可用条目；同类粗剪走「不用模板」并读访谈 FAQ，或「新建剪辑手法」沉淀后再回填本表。
 
 ## 产物
 
@@ -50,9 +49,8 @@
 |---|---|
 | Agent 直接开剪未选型 | 停下来读本篇，补问手法 |
 | 用户只要「剪一下」未点名手法 | 仍先选型；不要默认峰会除非素材/语境明显是峰会且用户确认 |
-| 点了未实装手法 | 说明未实装；引导新建或不用模板 |
 | 想新建却复制进 builtin-workflows | 禁止；只写 `docs/workflows/` |
-| 访谈却直接跑峰会 `plan` / 叙事重排被升序校验挡住 | 读 [`docs/faqs/访谈粗剪-分段异源与叙事选句.md`](../faqs/访谈粗剪-分段异源与叙事选句.md)；访谈手法仍未实装，勿标可用 |
+| 访谈却直接跑峰会 `plan` / 叙事重排被升序校验挡住 | 读 [`docs/faqs/访谈粗剪-分段异源与叙事选句.md`](../faqs/访谈粗剪-分段异源与叙事选句.md)；勿把访谈标成可用手法 |
 | 用户说「以前剪过」却重 STT / 当新采访 | 先查 sources + cache（parts md5 → concat md5 → transcript）；不确定则问，勿默认重跑 |
 | 只对 aligned/concat 转写且无 `stt` 溯源 | 补登记 from_parts + md5；新场尽量改分段 STT |
 
