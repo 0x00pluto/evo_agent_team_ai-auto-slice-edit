@@ -6,7 +6,7 @@
 
 | 字段 | 值 |
 |---|---|
-| scaffold_version | 2.3.0 |
+| scaffold_version | 2.3.1 |
 
 <!-- 来自 Vibecoding「自进化 Agent 工作区脚手架」母版。升级脚手架约定时改此号并对照母版 CHANGELOG；业务功能变更不要改此号。 -->
 
@@ -48,6 +48,7 @@
 | `tests/` | 测试，结构镜像 `src/` 与 `scripts/` | 是 |
 | `docs/` | 文档，见 docs 约定 | 是 |
 | `upgrades/` | 发版说明（GitHub Release 正文）；文件名与 tag 一致；首次发版再建 | 是 |
+| `builtin-scripts/` | 脚手架出勤等壳脚本（如 pixel-office presence）；入库 | 是 |
 | `cache/` | 可重建缓存，按内容哈希命名 | 否 |
 | `temp/` | 中间产物，可随时清空 | 否 |
 | `output/` | 最终产物，按 `output/<主题>/` 归档 | 否 |
